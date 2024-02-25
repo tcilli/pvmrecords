@@ -42,19 +42,14 @@ public class LeaderBoard {
         playerMap.clear();
         List<PVMEntry> bossRecords = new ArrayList<>();
         Main.mySQL.getApprovedSubmissions(bossRecords);
-
         for (String boss : BOSSES) {
-
             List<PVMEntry> entries = bossRecords.stream().filter(entry -> entry.boss().equals(boss)).toList();
-
-            if (entries.isEmpty()) continue;
-
             for (int enrage : ENRAGES) {
-                handle(entries.stream().filter(entry -> entry.enrage() == enrage).toList());
-            }
-            for (int size : GROUP_SIZES) {
-                handle(entries.stream().filter(entry -> entry.groupSize() == size).filter(entry -> !entry.hardMode()).toList());
-                handle(entries.stream().filter(entry -> entry.groupSize() == size).filter(PVMEntry::hardMode).toList());
+                List<PVMEntry> currentEnrage = entries.stream().filter(entry -> entry.enrage() == enrage).toList();
+                for (int size : GROUP_SIZES) {
+                    handle(currentEnrage.stream().filter(entry -> entry.groupSize() == size && !entry.hardMode()).toList());
+                    handle(currentEnrage.stream().filter(entry -> entry.groupSize() == size && entry.hardMode()).toList());
+                }
             }
         }
     }
